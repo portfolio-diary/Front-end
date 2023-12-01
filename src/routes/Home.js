@@ -11,6 +11,20 @@ import Footer from '../components/Footer';
 
 
 const Home = () => {
+  
+  const [nickname, setNickname] = useState('');
+  
+  useEffect(() => {
+    fetch(`/api/v1/mypages`)
+      .then(response => response.json())
+      .then(data => {
+        setNickname(data.result.name);
+      })
+      .catch(error => {
+        console.error('login user 데이터를 가져오는 동안 오류가 발생했습니다.', error);
+      });
+  });
+
     //posts 목록
     const [posts, setPosts] = useState([]);
     //최신순, 오래된순 정렬방법
@@ -28,9 +42,12 @@ const Home = () => {
         window.scrollTo({ top: 0});
     };
     
-    
+    //선택된 태그
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [tagPosts, setTagPosts] = useState([]);
     // API 요청으로 posts 목록 받아오기
     useEffect(() => {
+      if (selectedTags.length === 0) 
         getPosts(currentPage, orderBy)
         .then((data) => {
             if (data) {
@@ -42,48 +59,22 @@ const Home = () => {
         .catch((error) => {
             console.error('포스트 데이터를 가져오는 동안 오류가 발생했습니다.', error);
         });
-    }, [orderBy, currentPage]);
+      else{
+        getTagPosts(selectedTags, currentPage)
+          .then((data) => {
+            if (data) {
+              setTagPosts(data.pagePosts);
+              setTotalPages(data.totalPages);
+              setTotalPosts(data.totalPosts);
+            }
+          })
+          .catch((error) => {
+            console.error('태그별 포스트 데이터를 가져오는 동안 오류가 발생했습니다.', error);
+          });
+      }
+    }, [orderBy, currentPage, selectedTags]);
 
-    //선택된 태그
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [tagPosts, setTagPosts] = useState([]);
 
-    //api get요청으로 선택된 tags에 해당하는 posts목록 받아오기
-    useEffect(() => {
-        
-        if (selectedTags.length > 0) {
-          getTagPosts(selectedTags, currentPage)
-            .then((data) => {
-              if (data) {
-                setTagPosts(data.pagePosts);
-                setTotalPages(data.totalPages);
-                setTotalPosts(data.totalPosts);
-              }
-            })
-            .catch((error) => {
-              console.error('태그별 포스트 데이터를 가져오는 동안 오류가 발생했습니다.', error);
-            });
-        } else {
-            // selectedTags가 비어있을 때에는 전체 post 목록을 가져오기 위해 getPosts를 호출
-            setTagPosts(posts);
-            setTotalPages(Math.ceil(posts.length / 10));
-            setTotalPosts(posts.length);
-        }
-    }, [selectedTags, currentPage, posts]);
-    
-
-    const [nickname, setNickname] = useState('닉네임');
-  
-    useEffect(() => {
-      fetch(`/api/v1/mypages`)
-        .then(response => response.json())
-        .then(data => {
-          setNickname(data.result.name);
-        })
-        .catch(error => {
-          console.error('login user 데이터를 가져오는 동안 오류가 발생했습니다.', error);
-        });
-    });
 
     return (
         <div>

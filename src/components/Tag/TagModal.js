@@ -36,7 +36,6 @@ const TagModal = ({ setModalOpen, selectedTags, setSelectedTags,setCurrentPage }
     const closeModal = () => {
         setSelectedTags(selectedTags);
         setModalOpen(false);
-        setCurrentPage(0);
     };
 
 

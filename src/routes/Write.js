@@ -25,30 +25,36 @@ const Write = () => {
 
     //experiences 기본 질문 4개
     const [experiences, setExperiences] = useState([
-        { title: '활동을 하게 된 동기를 기록해주세요.', content: '' },
-        { title: '맡은 역할과 수행 내용을 기록해주세요.', content: '' },
-        { title: '힘들었던 점이 있었나요? 어떻게 극복하였나요?', content: '' },
-        { title: '느낀점 및 배운점을 기록해주세요.', content: '' },
+        { id: 1,title: '활동을 하게 된 동기를 기록해주세요.', content: '' },
+        { id: 2,title: '맡은 역할과 수행 내용을 기록해주세요.', content: '' },
+        { id: 3,title: '힘들었던 점이 있었나요? 어떻게 극복하였나요?', content: '' },
+        { id: 4,title: '느낀점 및 배운점을 기록해주세요.', content: '' },
     ]);
 
     // ExperienceForm 삭제
-    const handleRemoveExperience = index => {
-        const newExperiences = [...experiences];
-        newExperiences.splice(index, 1);
-        setExperiences(newExperiences);
-    };
+    const handleRemoveExperience = (id) => {
+        setExperiences((prevExperiences) => {
+          const newExperiences = prevExperiences.filter((experience) => experience.id !== id);
+          return newExperiences;
+        });
+      };
 
     //ExperienceForm 추가
     const handleAddExperience = e => {
         e.preventDefault();
-        setExperiences([...experiences, { title: '', content: '' }]);
+        const nextId = experiences.length + 1;
+        setExperiences([...experiences, { id:nextId, title: '', content: '' }]);
     };
     
     //experience 변경 내용 저장
-    const handleSaveExperience = (index, experience) => {
-    const updatedExperiences = [...experiences];
-    updatedExperiences[index] = experience;
-    setExperiences(updatedExperiences);
+    const handleSaveExperience = (id, experience) => {
+        setExperiences((prevExperiences) => {
+            // prevExperiences 배열에서 id와 일치하는 요소를 찾습니다.
+            const updatedExperiences = prevExperiences.map((item) =>
+              item.id === id ? experience : item
+            );
+            return updatedExperiences;
+          });
     };
 
     //선택된 파일
@@ -103,12 +109,13 @@ const Write = () => {
                 <form className={styles.formContainer} onSubmit={handleSubmit}>
                     <PostForm post={post} setPost={setPost}/>
 
-                    {experiences.map((experience, index) => (
+                    {experiences.map((experience) => (
                         <ExperienceForm
-                            onSave={experience => handleSaveExperience(index, experience)}
-                            key={index}
+                            onSave={experience => handleSaveExperience(experience.id, experience)}
+                            key={experience.id}
+                            id={experience.id}
                             title={experience.title}
-                            onRemove={() => handleRemoveExperience(index)}
+                            onRemove={()=> handleRemoveExperience(experience.id)}
                         />
                     ))}
                     <div className={styles.add}>

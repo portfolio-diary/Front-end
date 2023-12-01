@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../../styles/Write.module.css';
 
-const ExperienceForm = ({ title, onRemove, onSave}) => {
+const ExperienceForm = ({ id, title, onRemove, onSave}) => {
    
     //expreince의 title과 textarea 내용
     const [exTitle,setExTitle] = useState(title);
@@ -11,13 +11,13 @@ const ExperienceForm = ({ title, onRemove, onSave}) => {
     const handleTextChange = e => {
         const newText = e.target.value;
         setText(newText);
-        onSave({ title: exTitle, content: newText }); // 변경된 text를 onSave를 통해 전달
+        onSave({ id, title: exTitle, content: newText }); // 변경된 text를 onSave를 통해 전달
     };
 
     const handleTitleChange = e => {
         const newTitle = e.target.value;
         setExTitle(newTitle);
-        onSave({ title: newTitle, content: text }); // 변경된 text를 onSave를 통해 전달
+        onSave({ id, title: newTitle, content: text }); // 변경된 text를 onSave를 통해 전달
     };
     
     const handleRemove = e => {
